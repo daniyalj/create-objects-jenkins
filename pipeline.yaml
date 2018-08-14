@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: BuildConfig
+metadata:
+  name: jenkins-test
+  labels:
+    name: jenkins-test
+  annotations:
+    pipeline.alpha.openshift.io/uses: '[{"name": "myapp", "namespace": "", "kind": "DeploymentConfig"}]'
+spec:
+  triggers:
+    -
+    -
+  runPolicy: Serial
+  source:
+    type: None
+  strategy:
+    type: JenkinsPipeline
+    jenkinsPipelineStrategy:
+      jenkinsfile: |-
+          pipeline {
+            agent {
+              label 'maven'
+            }
+            stages {
+              stage('Build App') {
+                steps {
+                  git branch: 'master', url: 'git@github.com:ArctiqTeam/p-lawsociety-ocp.git', credentialsId:'065c4efc-35f8-4022-af14-efdd7b11d8ed'
+                  script {
+                      def pom = readMavenPom file: 'app/rmsadmin/pom.xml'
+                      version = pom.version
+                  }
+                  sh "cd app/rmsadmin && mvn install -DskipTests=true"
+                  sh 'ls /tmp/workspace/rms-lsucpipeline/app/rmsadmin/target/'
+                  sh 'oc whoami'
+                  sh 'oc project'
+                }
+              }
+            }
+          }
+  output:
+  resources:
+  postCommit:
