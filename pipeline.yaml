@@ -24,13 +24,7 @@ spec:
             stages {
               stage('Build App') {
                 steps {
-                  git branch: 'master', url: 'git@github.com:ArctiqTeam/p-lawsociety-ocp.git', credentialsId:'065c4efc-35f8-4022-af14-efdd7b11d8ed'
-                  script {
-                      def pom = readMavenPom file: 'app/rmsadmin/pom.xml'
-                      version = pom.version
-                  }
-                  sh "cd app/rmsadmin && mvn install -DskipTests=true"
-                  sh 'ls /tmp/workspace/rms-lsucpipeline/app/rmsadmin/target/'
+                  git branch: 'master', url: 'https://github.com/daniyalj/create-objects-jenkins.git'
                   sh 'oc whoami'
                   sh 'oc project'
                 }
