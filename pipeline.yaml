@@ -18,19 +18,33 @@ spec:
     jenkinsPipelineStrategy:
       jenkinsfile: |-
           pipeline {
-            agent {
-              label 'maven'
-            }
+              agent {
+                label 'maven'
+              }
             stages {
               stage('Build App') {
                 steps {
                   git branch: 'master', url: 'https://github.com/daniyalj/create-objects-jenkins.git'
-                  sh 'oc whoami'
-                  sh 'oc project'
+                  sh 'ls'
+                  script{
+                  openshift.withCluster() {
+                      openshift.withProject() {
+                            def serviceSelector = openshift.selector( "service", "testsvc")
+                            def serviceExists = serviceSelector.exists()
+                     
+                            if (!serviceExists) {
+                              svc = openshift.create('-f service.yaml')
+                            } else {
+                              svc = serviceSelector.object()
+                              echo "service exists.. moving on.."
+                             }
+                            }
+                          }
+                       }
+                    }
+                   }
                 }
               }
-            }
-          }
   output:
   resources:
   postCommit:
