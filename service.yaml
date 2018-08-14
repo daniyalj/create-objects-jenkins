@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: services      
+  name: testsvc      
 spec:
   selector:                  
     docker-registry: default
